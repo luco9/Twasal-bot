@@ -48,7 +48,24 @@ def send_welcome(message):
         OWNER_ID,
         f"قام شخص بالدخول للبوت الخاص بك\n\n{message.from_user.username}\nايديه : {message.from_user.id}"
     )
-
+# دالة للرد على رسالة من مستخدم
+@bot.message_handler(commands=['رد'])
+def reply_to_user(message):
+    if message.from_user.id == OWNER_ID:
+        response_text = message.text.split(" ", 2)  # تقسيم الرسالة بعد الأمر
+        if len(response_text) < 3:
+            bot.send_message(message.chat.id, "❌ يجب عليك كتابة معرف المستخدم والرسالة بعد الأمر.")
+            return
+        
+        user_id_to_reply = response_text[1]  # معرف المستخدم
+        response_message = response_text[2]  # الرسالة المراد إرسالها
+        
+        try:
+            bot.send_message(user_id_to_reply, response_message)
+            bot.send_message(message.chat.id, "✅ تم إرسال الرد للمستخدم.")
+        except Exception as e:
+            bot.send_message(message.chat.id, "❌ حدث خطأ أثناء إرسال الرسالة للمستخدم.")
+            print(f"Error sending message: {e}")
 # دالة لتحويل الرسائل الواردة إلى المالك
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def forward_to_owner(message):
